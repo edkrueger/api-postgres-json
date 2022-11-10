@@ -5,7 +5,7 @@ def make_businesses_table():
 
     cmd = """
         create table if not exists business (
-            id varchar,
+            id varchar primary key,
             business_info JSON
         );
     """
@@ -16,3 +16,7 @@ def make_businesses_table():
 
 def create_tables():
     make_businesses_table()
+
+
+if __name__ == "__main__":
+    create_tables()
