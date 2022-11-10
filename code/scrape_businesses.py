@@ -1,9 +1,8 @@
 import json
-import re
 
-from yelp_requests import business_search
 from create_tables import create_tables
 from crud import insert_one_business, read_one_business
+from yelp_requests import business_search
 
 if __name__ == "__main__":
 
