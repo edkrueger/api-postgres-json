@@ -8,6 +8,7 @@ import requests
 load_dotenv()
 
 YELP_API_KEY = os.environ["YELP_API_KEY"]
+HEADERS = {"Authorization": f"Bearer {YELP_API_KEY}"}
 
 
 def business_search_page(location, categories, page):
@@ -16,7 +17,7 @@ def business_search_page(location, categories, page):
     Pagination starts at 0.
     """
     url = "https://api.yelp.com/v3/businesses/search"
-    headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
+    headers = HEADERS
     params = {
         "location": location,
         "categories": categories,
@@ -26,9 +27,9 @@ def business_search_page(location, categories, page):
 
     response = requests.get(url, params=params, headers=headers)
     response.raise_for_status()
-    response_json = response.json()
+    response_dict = response.json()
 
-    return response_json["businesses"]
+    return response_dict["businesses"]
 
 
 def business_search(location, categories, page_limit=None):
@@ -55,3 +56,15 @@ def business_search(location, categories, page_limit=None):
         page += 1
 
     return all_businesses
+
+
+def get_reviews(business_id):
+
+    url = f"https://api.yelp.com/v3/businesses/{business_id}/reviews"
+    headers = HEADERS
+
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    response_dict = response.json()
+
+    return response_dict["reviews"]

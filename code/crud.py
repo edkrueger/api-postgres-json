@@ -56,6 +56,46 @@ def insert_one_business(business):
         connection.exec_driver_sql(insert_template, business)
 
 
+def insert_one_review(review):
+    """Takes a dict with keys id, business_id and review_info and inserts the review."""
+
+    insert_template = """
+        insert into review (id, business_id, review_info)
+        values (%(id)s, %(business_id)s, %(business_info)s);
+    """
+
+    with engine.connect() as connection:
+        connection.exec_driver_sql(insert_template, review)
+
+
+def pop_business_id_without_reviews():
+    query = """
+    select
+        b.id as business_id
+    from
+        business b
+    left join
+        review r
+    on
+        b.id = r.business_id
+    where
+        r.id is Null
+    limit 1
+    """
+
+    with engine.connect() as connection:
+        result = connection.exec_driver_sql(query)
+
+        row = result.first()
+
+        if row is None:
+            return None
+
+        business_id = row[0]
+
+        return business_id
+
+
 if __name__ == "__main__":
 
     import json
@@ -119,3 +159,5 @@ if __name__ == "__main__":
     # test that querying a business that doesn't exists returns None
     business = read_one_business("NOT AN ID")
     assert business is None
+
+    pop_business_id_without_reviews()

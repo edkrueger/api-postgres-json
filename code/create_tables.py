@@ -8,6 +8,12 @@ def make_businesses_table():
             id varchar primary key,
             business_info JSON
         );
+
+        create table if not exists review (
+            id varchar primary key,
+            business_id varchar references business(id),
+            review_info JSON
+        )
     """
 
     with engine.connect() as connection:
