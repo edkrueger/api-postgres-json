@@ -13,7 +13,13 @@ def make_businesses_table():
             id varchar primary key,
             business_id varchar references business(id),
             review_info JSON
-        )
+        );
+
+        create table entity_sentiment (
+            id bigserial primary key,
+            business_id varchar references business(id),
+            entity_sentiment_info JSON
+        );
     """
 
     with engine.connect() as connection:

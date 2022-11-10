@@ -96,6 +96,49 @@ def pop_business_id_without_reviews():
         return business_id
 
 
+def pop_without_entity_sentiment():
+    query = """
+    with review_text_cte as (
+    select
+        business_id,
+        review_info ->> 'text' as review_text
+    from
+        review r),
+    agg_review_text_cte as (
+    select
+        business_id,
+        string_agg(review_text, ' ') as review_text
+    from
+        review_text_cte
+    group by
+        business_id
+    )
+    select
+        a.business_id,
+        a.review_text
+    from
+        agg_review_text_cte a
+    left join entity_sentiment es
+    on
+        a.business_id = es.business_id
+    where
+        es.id is null
+    """
+
+    with engine.connect() as connection:
+        result = connection.exec_driver_sql(query)
+
+        row = result.first()
+
+        if row is None:
+            return None
+
+        business_id = row[0]
+        review_text = row[1]
+
+        return business_id, review_text
+
+
 if __name__ == "__main__":
 
     import json
