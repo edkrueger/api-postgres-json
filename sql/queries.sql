@@ -12,16 +12,29 @@ from
 	business
 
 -- a quick look at parking
-with review_text_cte as (
+with text_cte as (
 select
 	business_id,
-	review_info ->> 'text' as review_text
+	review_info ->> 'text' as text
 from
-	review r)
+	review),
+	agg_text_cte as (
 select
 	business_id,
-	review_text
+	string_agg(text, ' ') as text
 from
-	review_text_cte
+	text_cte
+group by
+	business_id
+	)
+	select
+	b.id,
+	b.business_info ->> 'name' as name,
+	text
+from
+	agg_text_cte t
+join business b
+	on
+	b.id = t.business_id
 where
-	review_text ilike '%parking%'
+	text ilike '%parking%'
